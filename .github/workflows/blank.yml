@@ -1,0 +1,64 @@
+name: Deploy NestJS App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # or whatever Node.js version you are using
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          npm install
+
+      # Step 4: Lint the NestJS application
+      - name: Lint the NestJS app
+        run: |
+          npm run lint
+
+      # Step 5: Build the NestJS app
+      - name: Build the NestJS app
+        run: |
+          npm run build
+
+      # Step 6: Add EC2 private key to SSH agent for secure deployment
+      - name: Add EC2 private key to SSH agent
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
+
+      # Step 7: Deploy the app to the server
+      - name: Deploy the app to EC2
+        run: |
+          # SSH into the server, install dependencies, and start the app
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_PUBLIC_IP }} << EOF
+            cd /path/to/your/app
+            git pull origin main  # Make sure to pull the latest changes
+            npm install --production  # Install dependencies for production
+            pm2 restart nestjs-app || pm2 start dist/main.js --name nestjs-app  # Restart or start the app using PM2
+          EOF
+
+      # Step 8: Verify Deployment (Optional)
+      - name: Verify Deployment
+        run: |
+          echo "Checking if the application is accessible"
+          curl http://${{ secrets.EC2_PUBLIC_IP }}:3000  # Replace with your port
