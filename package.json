@@ -1,0 +1,34 @@
+{
+  "name": "nestjs-app",
+  "version": "1.0.0",
+  "description": "A simple NestJS app",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "node dist/main.js",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint . --ext .ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@nestjs/common": "^9.0.0",
+    "@nestjs/core": "^9.0.0",
+    "@nestjs/platform-express": "^9.0.0",
+    "rxjs": "^7.5.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.5.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^9.0.0",
+    "@nestjs/testing": "^9.0.0",
+    "typescript": "^4.5.4",
+    "ts-node": "^10.4.0",
+    "eslint": "^7.32.0",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.4",
+    "jest-preset-angular": "^11.0.0"
+  },
+  "engines": {
+    "node": ">=14.17.0"
+  }
+}
+
